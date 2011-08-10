@@ -30,8 +30,12 @@ var _ = (function (global) {
 _.Object = (function () {
 
     var objectProto = Object.prototype,
-        hasOwnProperty = objectProto.hasOwnProperty;
+        arrayProto = Array.prototype,
+        hasOwnProperty = objectProto.hasOwnProperty,
+        toString = objectProto.toString,
+        slice = arrayProto.slice;
 
+    
     function each (self, callback, context) {
 
         var key;
@@ -108,10 +112,7 @@ _.Object = (function () {
 
         for (key in self) {
             if (hasOwnProperty.call(self, key)) {
-                values.push({ 
-                    key: key, 
-                    value: self[key] 
-                });
+                values.push({ key: key, value: self[key] });
             }
         }
 
@@ -405,7 +406,95 @@ _.Object = (function () {
 
         return result;
     }
+    
+    function functions (self) {
         
+        var result = [],
+            key;
+        
+        for (key in self) {
+            if (hasOwnProperty.call(self, key)) {
+                if (toString.call(self[key]) === '[object Function]') {
+                    result.push(key);
+                } 
+            }
+        }
+
+        return result;
+    }
+
+    function extend (self) {
+        
+        var sources = slice.call(arguments, 1), 
+            source,
+            i,
+            key;
+
+        for (i in sources) {
+            source = sources[i];
+            for (key in source) {
+                if (hasOwnProperty.call(source, key)) {
+                    self[key] = source[key];
+                }
+            }
+        }
+
+        return self;
+    }
+
+    function defaults (self) {
+        
+        var sources = slice.call(arguments, 1), 
+            source,
+            i,
+            key;
+
+        for (i in sources) {
+            source = sources[i];
+            for (key in source) {
+                if (hasOwnProperty.call(source, key) && self[key] === null) {
+                    self[key] = source[key];
+                }
+            }
+        }
+
+        return self;
+    }
+
+    function clone (self) {
+        
+        var clone = {},
+            key;
+
+        for (key in self) {
+            if (hasOwnProperty.call(self, key)) {
+                clone[key] = self[key];
+            }
+        }
+
+        return clone;
+    }
+
+    function tap (self, callback) {
+        
+        callback(self);
+
+        return self;
+    }
+        
+    function isEmpty (self) {
+        
+        var key;
+
+        for (key in self) {
+            if (hasOwnProperty.call(self, key)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     return {
         each: each,
         forEach: each,
@@ -432,7 +521,13 @@ _.Object = (function () {
         groupBy: groupBy,
         size: size,
         keys: keys,
-        values: values
+        values: values,
+        functions: functions,
+        extend: extend,
+        defaults: defaults,
+        clone: clone,
+        tap: tap,
+        isEmpty: isEmpty
     };
 
 }());
