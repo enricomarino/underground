@@ -16,7 +16,7 @@ var _ = (function (global) {
     // Export the Underground object for **CommonJS**, 
     // with backwards-compatibility for the old 'require()' API. 
     // If we're not in CommonJS, add '_' to the global object.
-    if (typeof module !== 'undefined' && module.exports) {
+    if (module !== void 0 && module.exports) {
         module.exports = _;
     } else {
     // Exported as a string, for Closure Compiler "advanced" mode.
@@ -41,7 +41,7 @@ _.Object = (function () {
         var key;
 
         if (self === void 0 || self === null) {
-            throw new TypeError();
+            return;
         }
 
         for (key in self) {
@@ -75,7 +75,7 @@ _.Object = (function () {
 
     function reduce (self, callback, memo, context) {
         
-        var nomemo = typeof memo === 'undefined',
+        var nomemo = memo === void 0,
             key;
 
         if (self === void 0 || self === null) {
@@ -83,12 +83,14 @@ _.Object = (function () {
         }
 
         for (key in self) {
-            if (nomemo) {
-                memo = self[key];
-                nomemo = false;
-            }
-            else if (hasOwnProperty.call(self, key)) {
-                memo = callback.call(context, memo, self[key], key, self);
+            if (hasOwnProperty.call(self, key)) {
+                if (nomemo) {
+                    memo = self[key];
+                    nomemo = false;
+                }
+                else {
+                    memo = callback.call(context, memo, self[key], key, self);
+                }
             }
         }
 
@@ -101,7 +103,7 @@ _.Object = (function () {
 
     function reduceRight (self, callback, memo, context) {
         
-        var nomemo = typeof memo === 'undefined',
+        var nomemo = memo === void 0,
             values = [],
             key,
             i;
@@ -397,7 +399,6 @@ _.Object = (function () {
             throw new TypeError();
         }
 
-
         for (key in obj) {
             if (hasOwnProperty.call(self, key)) {
                 result.push(self[key]);
@@ -528,6 +529,261 @@ _.Object = (function () {
         clone: clone,
         tap: tap,
         isEmpty: isEmpty
+    };
+
+}());
+
+_.Array = (function () {
+    
+    function each (self, callback, context) {
+
+        var i,
+            len;
+        
+        if (self === void 0 || self === null) {
+            return;
+        }
+
+        for (i = 0, len = self.length; i < len; i += 1) {
+            if (i in self) {
+                callback.call(context, self[i], i, self);
+            }
+        }
+
+        return self;
+    }
+
+    function map (self, callback, context) {
+        
+        var results = [],
+            i,
+            len;
+
+        if (self === void 0 || self === null) {
+            return;
+        }
+
+        for (i = 0, len = self.length; i < len; i += 1) {
+            if (i in self) {
+                results.push(callback.call(context, self[i], i, self));
+            }
+        }
+
+        return self;
+    }
+
+    function reduce (self, callback, memo, context) {
+        
+        var nomemo = memo === void 0,
+            i,
+            len;
+        
+        if (self === void 0 || self === null) {
+            throw new TypeError();
+        }
+
+        len = self.length;
+
+        if (nomemo && len === 0) {
+            throw new TypeError();
+        }
+
+        for (i = nomemo ? 0 : 1, memo = nomemo ? self[0] : memo; i < len; i += 1) {
+            if (i in self) {
+                memo = callback.call(context, memo, self[i], i, self);
+            }
+        }
+
+        return memo;
+    }
+
+    function reduceRight (self, callback, memo, context) {
+        
+        var nomemo = memo === void 0,
+            i,
+            len;
+        
+        if (self === void 0 || self === null) {
+            throw new TypeError();
+        }
+
+        len = self.length;
+
+        if (nomemo && len === 0) {
+            throw new TypeError();
+        }
+
+        for (i = nomemo ? len - 1 : len, memo = nomemo ? self[len - 1] : memo; i--; ) {
+            if (i in self) {
+                memo = callback.call(context, memo, self[i], i, self);
+            }
+        }
+
+        return memo;
+    }
+
+    function reduceRight (self, callback, memo, context) {
+        
+        var nomemo = memo === void 0,
+            i,
+            len;
+        
+        if (self === void 0 || self === null) {
+            throw new TypeError();
+        }
+
+        len = self.length;
+
+        if (nomemo && len === 0) {
+            throw new TypeError();
+        }
+
+        for (i = nomemo ? len - 1 : len, memo = nomemo ? self[len - 1] : memo; i--; ) {
+            if (i in self) {
+                memo = callback.call(context, memo, self[i], i, self);
+            }
+        }
+
+        return memo;
+    }
+
+    function find (self, callback, context) {
+        
+        var results = [],
+            i,
+            len;
+
+        if (self === void 0 || self === null) {
+            return null;
+        }
+
+        for (i = 0, len = self.length; i < len; i += 1) {
+            if (i in self && callback.call(context, self[i], i, self)) {
+                return self[i];
+            }
+        }
+
+        return null;
+    }
+
+    function filter (self, callback, context) {
+        
+        var results = [];
+
+
+        if (self === void 0 || self === null) {
+            return [];
+        }
+
+        for (i = 0, len = self.length; i < len; i += 1) {
+            if (i in self && callback.call(context, self[i], i, self)) {
+                results.push(self[i]);
+            }
+        }
+
+        return results;
+    }
+
+
+    function reject (self, callback, context) {
+        
+        var results = [];
+
+        if (self === void 0 || self === null) {
+            return [];
+        }
+
+        for (i = 0, len = self.length; i < len; i += 1) {
+            if (i in self && !callback.call(context, self[i], i, self)) {
+                results.push(self[i]);
+            }
+        }
+
+        return results;
+    }
+
+    function every (self, callback, context) {
+           
+        if (self === void 0 || self === null) {
+            return true;
+        }
+
+        for (i = 0, len = self.length; i < len; i += 1) {
+            if (i in self && !callback.call(context, self[i], i, self)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    function some (self, callback, context) {
+           
+        if (self === void 0 || self === null) {
+            return false;
+        }
+
+        for (i = 0, len = self.length; i < len; i += 1) {
+            if (i in self && callback.call(context, self[i], i, self)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    function include (self, target) {
+           
+        if (self === void 0 || self === null) {
+            return false;
+        }
+
+        for (i = 0, len = self.length; i < len; i += 1) {
+            if (i in self && self[i] === target) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    function pluck (self, key) {
+        
+        var result = [],
+            i,
+            len;
+
+        if (self === void 0 || self === null) {
+            return;
+        }
+
+        for (i = 0, len = self.length; i < len; i += 1) {
+            if (i in self && key in self[i] && hasOwnProperty.call(self[i], key)) {
+                result.push(self[i][key]);
+            }
+        }
+
+        return result;
+    }
+
+    return {
+        each: each,
+        forEach: each,
+        map: map,
+        reduce: reduce,
+        foldl: reduce,
+        inject: reduce,
+        reduceRight: reduceRight,
+        foldr: reduceRight,
+        find: find,
+        detect: find,
+        filter: filter,
+        select: filter,
+        reject: reject,
+        every: every,
+        all: every,
+        some: some,
+        any: some
     };
 
 }());
