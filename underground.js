@@ -293,7 +293,119 @@ _.Object = (function () {
 
         return result;
     }
-  
+
+    function sortBy (self, callback, context) {
+        
+        var tosort = [],
+            sorted,
+            key,
+            len,
+            i;
+
+        if (self === void 0 || self === null) {
+            throw new TypeError();
+        }
+
+        for (key in self) {
+            if (hasOwnProperty.call(self, key)) {
+                tosort.push({
+                    value: self[key],
+                    criteria: callback.call(context, self[key], key, self)
+                });
+            }
+        }
+
+        tosort.sort(function (left, right) {
+
+            var a = left.criteria,
+                b = right.criteria;
+            
+            return a < b ? -1 : a > b ? 1 : 0;
+        });
+
+        for (i = 0, len = tosort.length; i < len; i += 1) {
+            sorted.push(tosort[i].value);
+        }
+
+        return sorted;
+    }
+
+    function groupBy (self, callback, context) {
+        
+        var result = {}, 
+            key, 
+            value, 
+            group;
+
+        if (self === void 0 || self === null) {
+            throw new TypeError();
+        }
+
+        for (key in self) {
+            if (hasOwnProperty.call(self, key)) {
+                value = self[key];
+                group = callback.call(context, value, key, self);
+                (result[key] || (result[key] = [])).push(value);
+            }
+        }
+
+        return result;
+    }
+
+    function size (self) {
+        
+        var result = 0;
+
+        if (self === void 0 || self === null) {
+            throw new TypeError();
+        }
+
+        for (key in self) {
+            if (hasOwnProperty.call(self, key)) {
+                result += 1;
+            }
+        }
+
+        return result;
+    }
+
+    function keys (self) {
+        
+        var result = [], 
+            key;
+
+        if (self !== Object(self)) {
+            throw new TypeError('Invalid object');
+        }
+
+        for (key in obj) {
+            if (hasOwnProperty.call(self, key)) {
+                result.push(key);
+            }
+        }
+
+        return result;
+    }
+
+    function values (self) {
+        
+        var result = [],
+            key;
+
+        if (self === void 0 || self === null) {
+            throw new TypeError();
+        }
+
+
+        for (key in obj) {
+            if (hasOwnProperty.call(self, key)) {
+                result.push(self[key]);
+            }
+        }
+
+        return result;
+    }
+        
     return {
         each: each,
         forEach: each,
@@ -315,7 +427,12 @@ _.Object = (function () {
         include: include,
         contains: include,
         max: max,
-        min: min
+        min: min,
+        sortBy: sortBy,
+        groupBy: groupBy,
+        size: size,
+        keys: keys,
+        values: values
     };
 
 }());
