@@ -34,7 +34,6 @@ _.Object = (function () {
         hasOwnProperty = objectProto.hasOwnProperty,
         toString = objectProto.toString,
         slice = arrayProto.slice;
-
     
     function each (self, callback, context) {
 
@@ -535,6 +534,15 @@ _.Object = (function () {
 
 _.Array = (function () {
     
+    var objectProto = Object.prototype,
+        arrayProto = Array.prototype,
+        hasOwnProperty = objectProto.hasOwnProperty,
+        toString = objectProto.toString,
+        slice = arrayProto.slice,
+        math = Math,
+        mathMax = math.max,
+        mathMin = math.min;
+
     function each (self, callback, context) {
 
         var i,
@@ -766,6 +774,195 @@ _.Array = (function () {
         return result;
     }
 
+    function max (self, callback, context) {
+        
+        var result = null,
+            value,
+            i,
+            len;
+        
+        if (callback === void 0) {
+            return mathMax.apply(math, self);
+        }
+
+        for (i = 0, len = self.length; i < len; i += 1) {
+            if (i in self) {
+                value = callback.call(context, self[i], i, self);
+                result = result === null || result < value ? value : result;
+            }
+        }
+
+        return result;
+    }
+
+    function min (self, callback, context) {
+        
+        var result = null,
+            value,
+            i,
+            len;
+        
+        if (callback === void 0) {
+            return mathMax.apply(math, self);
+        }
+
+        for (i = 0, len = self.length; i < len; i += 1) {
+            if (i in self) {
+                value = callback.call(context, self[i], i, self);
+                result = result === null || value < result ? value : result;
+            }
+        }
+
+        return result;
+    }
+
+    function sortBy (self, callback, context) {
+        
+        self.sort(function (left, right) {
+            var a = callback.call(context, left, self.indexOf(left), self),
+                b = callback.call(context, right, self.indexOf(right), self);
+            
+            return a < b ? -1 : a > b ? 1 : 0;
+        });
+
+        return self;
+    }
+
+    function groupBy (self, callback, context) {
+        
+        var result = {},
+            key,
+            i, 
+            len;
+
+        for (i = 0, len = self.length; i < len; i += 1) {
+            if (i in self) {
+                key = callback.call(context, self[i], i, self);
+                (result[key] || (result[key] = [])).push(value);
+            }
+        }
+
+        return result;
+    }
+
+    function identity (self) {
+
+        return self;
+    }
+
+    function sortedIndex (self, obj, callback) {
+        
+        callback = callback || identity;
+
+        var low = 0,
+            hight = self.length,
+            mid;
+        
+        while (low < hight) {
+            mid = (low + hight) >> 1;
+            callback(self[mid]) < callback(obj) ? low = mid + 1 : high = mid;
+        }
+
+        return low;
+    }
+
+    function size (self) {
+        
+        return self.length;
+    }
+
+    function first (self, n) {
+        
+        return (n !== null) ? slice.call(self, 0, n) : self[0];
+    }
+
+    function rest (self, index) {
+        
+        return slice.call(self, (index === null) ? 1 : index);
+    }
+
+    function last (self) {
+        
+        return self[self.length - 1];
+    }
+
+    function compact (self) {
+        
+        var result = [],
+            i,
+            len;
+        
+        if (self === void 0) {
+            return result;
+        }
+
+        for (i = 0, len = self.length; i < len; i += 1) {
+            if (i in self && self[i] !== null) {
+                result.push(self[i]);
+            }
+        }
+
+        return result;
+    }
+
+    function without (self) {
+        
+        var values = slice.call(arguments, 1),
+            result = [],
+            i, 
+            len;
+        
+        if (self === void 0) {
+            return result;
+        }
+
+        for (i = 0, len = self.length; i < len; i += 1) {
+            if (i in self && !(self[i] in values)) {
+                result.push(self[i]);
+            }
+        }
+
+        return result;
+    }
+
+    function uniq (self, isSorted, callback) {
+        
+        var result = [],
+            i,
+            len;
+        
+        for (i = 0, len = self.length; i < len; i += 1) {
+            if (i in self && !(self[i] in result)) {
+                result.push(self[i]);
+            }
+        }
+
+        return result;
+    }
+
+    function union () {
+        
+        var result = [],
+            arrays = slice.call(arguments, 1),
+            array,
+            i,
+            n,
+            j,
+            len;
+
+        for (i = 0, n = arrays.length; i < n; i += 1) {
+            if (i in arrays) {
+                for (j = 0, array = arrays[i], len = array.length, j < len; j += 1) {
+                    if (j in array && !(array[j] in result) {
+                        result.push(array[i]);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
     return {
         each: each,
         forEach: each,
@@ -783,7 +980,25 @@ _.Array = (function () {
         every: every,
         all: every,
         some: some,
-        any: some
+        any: some,
+        include: include,
+        pluck: pluck,
+        max: max,
+        min: min,
+        sortBy: sortBy,
+        groupBy: groupBy,
+        identity: identity,
+        sortedIndex: sortedIndex,
+        size: size,
+        first: first,
+        head: first,
+        rest: rest,
+        tail: rest,
+        last: last,
+        compact: compact,
+        uniq: uniq,
+        unique: unique,
+        union: union
     };
 
 }());
