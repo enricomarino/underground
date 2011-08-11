@@ -29,11 +29,9 @@ var _ = (function (global) {
 
 _.Object = (function () {
 
-    var objectProto = Object.prototype,
-        arrayProto = Array.prototype,
-        hasOwnProperty = objectProto.hasOwnProperty,
-        toString = objectProto.toString,
-        slice = arrayProto.slice;
+    var __has = {}.hasOwnProperty,
+        __toString = {}.toString,
+        __slice = [].slice;
     
     function each (self, callback, context) {
 
@@ -44,7 +42,7 @@ _.Object = (function () {
         }
 
         for (key in self) {
-            if (hasOwnProperty.call(self, key)) {
+            if (__has.call(self, key)) {
                 callback.call(context, self[key], key, self);
             }
         }
@@ -63,7 +61,7 @@ _.Object = (function () {
         }
 
         for (key in self) {
-            if (hasOwnProperty.call(self, key)) {
+            if (__has.call(self, key)) {
                 result = callback.call(context, self[key], key, self);
                 results.push(result);
             }
@@ -82,7 +80,7 @@ _.Object = (function () {
         }
 
         for (key in self) {
-            if (hasOwnProperty.call(self, key)) {
+            if (__has.call(self, key)) {
                 if (nomemo) {
                     memo = self[key];
                     nomemo = false;
@@ -112,7 +110,7 @@ _.Object = (function () {
         }
 
         for (key in self) {
-            if (hasOwnProperty.call(self, key)) {
+            if (__has.call(self, key)) {
                 values.push({ key: key, value: self[key] });
             }
         }
@@ -143,7 +141,7 @@ _.Object = (function () {
         }
 
         for (key in self) {
-            if (hasOwnProperty.call(self, key)) {
+            if (__has.call(self, key)) {
                 if (callback.call(context, self[key], key, self)) {
                     return self[key];
                 }
@@ -163,7 +161,7 @@ _.Object = (function () {
         }
 
         for (key in self) {
-            if (hasOwnProperty.call(self, key)) {
+            if (__has.call(self, key)) {
                 if (callback.call(context, self[key], key, self)) {
                     results.push(self[key]);
                 }
@@ -183,7 +181,7 @@ _.Object = (function () {
         }
 
         for (key in self) {
-            if (hasOwnProperty.call(self, key)) {
+            if (__has.call(self, key)) {
                 if (!callback.call(context, self[key], key, self)) {
                     results.push(self[key]);
                 }
@@ -203,7 +201,7 @@ _.Object = (function () {
         }
 
         for (key in self) {
-            if (hasOwnProperty.call(self, key)) {
+            if (__has.call(self, key)) {
                 if (result = result && callback.call(context, self[key], key, self)) {
                     return false;
                 }
@@ -227,7 +225,7 @@ _.Object = (function () {
         }
 
         for (key in self) {
-            if (hasOwnProperty.call(self, key)) {
+            if (__has.call(self, key)) {
                 if (callback.call(context, self[key], key, self)) {
                     return true;
                 }
@@ -246,7 +244,7 @@ _.Object = (function () {
         }
 
         for (key in self) {
-            if (hasOwnProperty.call(self, key)) {
+            if (__has.call(self, key)) {
                 if (self[key] === target) {
                     return true;
                 }
@@ -267,7 +265,7 @@ _.Object = (function () {
         }
 
         for (key in self) {
-            if (hasOwnProperty.call(self, key)) {
+            if (__has.call(self, key)) {
                 value = callback ? callback.call(context, self[key], key, self) : self[key];
                 result = result === null || result < value ? value : result;
             }
@@ -287,7 +285,7 @@ _.Object = (function () {
         }
 
         for (key in self) {
-            if (hasOwnProperty.call(self, key)) {
+            if (__has.call(self, key)) {
                 value = callback ? callback.call(context, self[key], key, self) : self[key];
                 result = result === null || value < result ? value : result;
             }
@@ -298,38 +296,36 @@ _.Object = (function () {
 
     function sortBy (self, callback, context) {
         
-        var tosort = [],
-            sorted,
+        var result = [],
             key,
             len,
             i;
+
+        function comparator (left, right) {
+
+            var a = left.criteria,
+                b = right.criteria;
+            
+            return a < b ? -1 : a > b ? 1 : 0;
+        }
 
         if (self === void 0 || self === null) {
             throw new TypeError();
         }
 
         for (key in self) {
-            if (hasOwnProperty.call(self, key)) {
-                tosort.push({
-                    value: self[key],
-                    criteria: callback.call(context, self[key], key, self)
-                });
+            if (__has.call(self, key)) {
+                result.push({ value: self[key], criteria: callback.call(context, self[key], key, self) });
             }
         }
 
-        tosort.sort(function (left, right) {
+        result.sort(comparator);
 
-            var a = left.criteria,
-                b = right.criteria;
-            
-            return a < b ? -1 : a > b ? 1 : 0;
-        });
-
-        for (i = 0, len = tosort.length; i < len; i += 1) {
-            sorted.push(tosort[i].value);
+        for (i = 0, len = result.length; i < len; i += 1) {
+            result[i] = result[i].value;
         }
 
-        return sorted;
+        return result;
     }
 
     function groupBy (self, callback, context) {
@@ -344,7 +340,7 @@ _.Object = (function () {
         }
 
         for (key in self) {
-            if (hasOwnProperty.call(self, key)) {
+            if (__has.call(self, key)) {
                 value = self[key];
                 group = callback.call(context, value, key, self);
                 (result[key] || (result[key] = [])).push(value);
@@ -363,7 +359,7 @@ _.Object = (function () {
         }
 
         for (key in self) {
-            if (hasOwnProperty.call(self, key)) {
+            if (__has.call(self, key)) {
                 result += 1;
             }
         }
@@ -381,7 +377,7 @@ _.Object = (function () {
         }
 
         for (key in obj) {
-            if (hasOwnProperty.call(self, key)) {
+            if (__has.call(self, key)) {
                 result.push(key);
             }
         }
@@ -399,7 +395,7 @@ _.Object = (function () {
         }
 
         for (key in obj) {
-            if (hasOwnProperty.call(self, key)) {
+            if (__has.call(self, key)) {
                 result.push(self[key]);
             }
         }
@@ -413,8 +409,8 @@ _.Object = (function () {
             key;
         
         for (key in self) {
-            if (hasOwnProperty.call(self, key)) {
-                if (toString.call(self[key]) === '[object Function]') {
+            if (__has.call(self, key)) {
+                if (__toString.call(self[key]) === '[object Function]') {
                     result.push(key);
                 } 
             }
@@ -425,7 +421,7 @@ _.Object = (function () {
 
     function extend (self) {
         
-        var sources = slice.call(arguments, 1), 
+        var sources = __slice.call(arguments, 1), 
             source,
             i,
             key;
@@ -433,7 +429,7 @@ _.Object = (function () {
         for (i in sources) {
             source = sources[i];
             for (key in source) {
-                if (hasOwnProperty.call(source, key)) {
+                if (__has.call(source, key)) {
                     self[key] = source[key];
                 }
             }
@@ -444,7 +440,7 @@ _.Object = (function () {
 
     function defaults (self) {
         
-        var sources = slice.call(arguments, 1), 
+        var sources = __slice.call(arguments, 1), 
             source,
             i,
             key;
@@ -452,7 +448,7 @@ _.Object = (function () {
         for (i in sources) {
             source = sources[i];
             for (key in source) {
-                if (hasOwnProperty.call(source, key) && self[key] === null) {
+                if (__has.call(source, key) && self[key] === null) {
                     self[key] = source[key];
                 }
             }
@@ -467,7 +463,7 @@ _.Object = (function () {
             key;
 
         for (key in self) {
-            if (hasOwnProperty.call(self, key)) {
+            if (__has.call(self, key)) {
                 clone[key] = self[key];
             }
         }
@@ -487,7 +483,7 @@ _.Object = (function () {
         var key;
 
         for (key in self) {
-            if (hasOwnProperty.call(self, key)) {
+            if (__has.call(self, key)) {
                 return false;
             }
         }
@@ -534,14 +530,11 @@ _.Object = (function () {
 
 _.Array = (function () {
     
-    var objectProto = Object.prototype,
-        arrayProto = Array.prototype,
-        hasOwnProperty = objectProto.hasOwnProperty,
-        toString = objectProto.toString,
-        slice = arrayProto.slice,
-        math = Math,
-        mathMax = math.max,
-        mathMin = math.min;
+    var __has = {}.hasOwnProperty,
+        __toString = {}.toString,
+        __slice = [].slice,
+        __max = Math.max,
+        __min = Math.min;
 
     function each (self, callback, context) {
 
@@ -766,7 +759,7 @@ _.Array = (function () {
         }
 
         for (i = 0, len = self.length; i < len; i += 1) {
-            if (i in self && key in self[i] && hasOwnProperty.call(self[i], key)) {
+            if (i in self && key in self[i] && __has.call(self[i], key)) {
                 result.push(self[i][key]);
             }
         }
@@ -782,7 +775,7 @@ _.Array = (function () {
             len;
         
         if (callback === void 0) {
-            return mathMax.apply(math, self);
+            return __max(self);
         }
 
         for (i = 0, len = self.length; i < len; i += 1) {
@@ -803,7 +796,7 @@ _.Array = (function () {
             len;
         
         if (callback === void 0) {
-            return mathMax.apply(math, self);
+            return __min(self);
         }
 
         for (i = 0, len = self.length; i < len; i += 1) {
@@ -873,12 +866,12 @@ _.Array = (function () {
 
     function first (self, n) {
         
-        return (n !== null) ? slice.call(self, 0, n) : self[0];
+        return (n !== null) ? __slice.call(self, 0, n) : self[0];
     }
 
     function rest (self, index) {
         
-        return slice.call(self, (index === null) ? 1 : index);
+        return __slice.call(self, (index === null) ? 1 : index);
     }
 
     function last (self) {
@@ -907,7 +900,7 @@ _.Array = (function () {
 
     function without (self) {
         
-        var values = slice.call(arguments, 1),
+        var values = __slice.call(arguments, 1),
             result = [],
             i, 
             len;
@@ -943,20 +936,104 @@ _.Array = (function () {
     function union () {
         
         var result = [],
-            arrays = slice.call(arguments, 1),
+            arrays = __slice.call(arguments, 1),
             array,
+            value,
             i,
-            n,
             j,
+            n,
             len;
 
-        for (i = 0, n = arrays.length; i < n; i += 1) {
-            if (i in arrays) {
-                for (j = 0, array = arrays[i], len = array.length, j < len; j += 1) {
-                    if (j in array && !(array[j] in result) {
-                        result.push(array[i]);
+        for (j = 0, n = arrays.length; j < n; j += 1) {
+            if (j in arrays) {
+                array = arrays[j];
+                for (i = 0, len = array.length; i < len; i += 1) {
+                    if (i in array) {
+                        value = array[i];
+                        if (result.indexOf(value) >= 0) {
+                            result.push(array[i]);
+                        }
                     }
                 }
+            }
+        }
+
+        return result;
+    }
+
+    function intersection (self) {
+        
+        var result = [],
+            arrays = __slice.call(arguments, 1),
+            n = arrays.length;
+            value,
+            i,
+            j,
+            n,
+            len,
+
+        if (n === 0) {
+            return __slice.call(self);
+        }
+
+        for (i = 0, len = self.length; i < len; i += 1) {
+            if (i in self) {
+                value = self[i];
+                if (result.indexOf(value) < 0) {
+                    intersect = true;
+                    for (j = 0, n = arrays.lenght; intersect && j < n; j += 1) {
+                        intersect = arrays[j].indexOf(value);
+                    }
+                    if (intersect) {
+                        result.push(value);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    function difference (self, other) {
+        
+        var result = [],
+            value,
+            i,
+            len;
+
+        for (i = 0, n = self.length; i < len; i += 1) {
+            if (i in self) {
+                value = self[i];
+                if (self.indexOf(value) < 0 && result.indexOf(value) < 0) {
+                    result.push(value);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    function zip () {
+        
+        var result,
+            arrays = __slice.call(arguments),
+            array,
+            i,
+            j,
+            n = arrays.length,
+            len = 0;
+        
+        for (j = 0; j < n; j += 1) {
+            array = arrays[j];
+            len = len > array.length ? len : array.length;
+        }
+
+        result = new Array(len);
+
+        for (i = 0, i < len; i += 1) {
+            result[i] = new Array(n);
+            for (j = 0; j < n; j += 1) {
+                result[i][j] = arrays[j][i];
             }
         }
 
@@ -998,7 +1075,11 @@ _.Array = (function () {
         compact: compact,
         uniq: uniq,
         unique: unique,
-        union: union
+        union: union,
+        intersection: intersection,
+        intersect: intersect,
+        difference: difference,
+        zip: zip
     };
 
 }());
